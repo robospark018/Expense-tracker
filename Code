@@ -1,0 +1,99 @@
+from expense import Expense
+from datetime import datetime, timedelta
+
+
+    
+
+def get_user_expense():
+     print(f"Running user expense!")
+     expense_name = input("write user's name:")
+     expense_amount = float(input("enter amount:"))
+     
+     expense_categories = [
+         "Food" ,
+         "house" ,
+         "party" , 
+         "work" ,
+         "other" ,
+         ]
+     
+     while True:
+        print ("select a category:")
+        for i , category_name in enumerate(expense_categories):
+             print(f" {i+1}.{category_name} ")
+             
+        value_range = f"[1-{len(expense_categories)}]"
+        selected_index = int(input(f"enter a category number{value_range}")) - 1
+        
+        if selected_index in range(len(expense_categories)):
+            selected_category = expense_categories[selected_index]
+            new_expense = Expense(name = expense_name, category = selected_category, amount = expense_amount
+            )
+            return new_expense
+        else:
+            print("Invalid category,please try again!")
+             
+def save_expense_to_file(expense: Expense, expense_file_path):
+    print(f"saving user expense!: {expense} to {expense_file_path}")
+    with open (expense_file_path,"a") as f:
+        print(expense.name, expense.amount, expense.category)
+        f.write(f"{expense.name}, {expense.amount}, {expense.category}\n")
+        
+def summarize_expense(expense_file_path,budget):
+    print(f"summarizing user expense!")
+    expenses : list[Expense] = []
+    with open (expense_file_path, "r")as f :
+        lines = f.readlines()
+        for line in lines:
+             expense_name, expense_amount , expense_category= line.strip().split(",")
+             line_expense = Expense(
+                 name = expense_name , amount=float(expense_amount), category=expense_category
+             )
+             expenses.append(line_expense)
+             amount_by_category = {}
+    for expense in expenses:
+        key = expense.category
+        if key in amount_by_category:
+            amount_by_category[key] += expense.amount
+        else:
+            amount_by_category[key] = expense.amount
+         
+    print("Expenses by category📈:")   
+    for key, amount in amount_by_category.items():
+        print(f"  {key}, Rs{amount:.2f}")
+        
+    total_spent = sum([x.amount for x in expenses])
+    print(f" Total spent: Rs{total_spent:.2f}")
+    
+    remaining_budget = total_spent - budget
+    print(f" Budget remaining: Rs{remaining_budget:.2f}")
+    
+def remaining_days_in_month():
+        
+    today = datetime.today()
+    
+    first_day_next_month = today.replace(day=1) + timedelta(days=31)
+    first_day_next_month = first_day_next_month.replace(day=1)
+    
+  
+    last_day_current_month = first_day_next_month - timedelta(days=1)
+    
+    
+    remaining_days = (last_day_current_month - today).days
+    
+    return remaining_days
+
+print(f"Remaining days in the current month: {remaining_days_in_month()}")
+def main():
+    print(f"Running Expense tracker!")
+    expense_file_path = "expenses.csv"
+    budget = 5000
+    
+    expense = get_user_expense()
+    
+    save_expense_to_file(expense, expense_file_path )
+    
+    summarize_expense(expense_file_path,budget)
+    
+if __name__ == "__main__":
+    main()
