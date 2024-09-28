@@ -10,11 +10,11 @@ def get_user_expense():
      expense_amount = float(input("enter amount:"))
      
      expense_categories = [
-         "Food" ,
-         "house" ,
-         "party" , 
-         "work" ,
-         "other" ,
+         "Food",
+         "house",
+         "party", 
+         "work",
+         "other",
          ]
      
      while True:
